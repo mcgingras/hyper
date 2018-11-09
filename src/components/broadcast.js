@@ -66,7 +66,8 @@ export default class Broadcast extends Component {
 
        var mediaRecorder = recorder(stream, {
          mimeType: mimeType,
-         audioBitsPerSecond: 32000
+         audioBitsPerSecond: 32000,
+         videoBitsPerSecond: 200000
        })
 
       rec.init(stream);
