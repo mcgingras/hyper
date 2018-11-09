@@ -42,8 +42,8 @@ export default class Broadcast extends Component {
   startRecording(){
     console.log("This broadcast is being recorded");
     this.state.rec.start()
-      .then(() => this.state.isRecording = true);
-  }
+      .then(() => this.setState({isRecording: true})
+  )}
 
   download(){
     Recorder.download(this.state.blob, 'my-audio-file');
@@ -52,20 +52,16 @@ export default class Broadcast extends Component {
   stopRecording() {
     this.state.rec.stop()
       .then(({blob, buffer}) => {
-        this.state.blob = blob;
+        this.setState({blob: blob});
     });
   }
 
   startBroadcast(){
     const context = this;
     let rec = context.state.rec;
-    getUserMedia({video: context.props.video, audio: context.props.audio},
+    getUserMedia(
     function (err, stream) {
        if (err) return console.log('😵 getUserMedia error', err)
-
-       var elPreview = document.getElementById('preview')
-       elPreview.muted = true;
-       elPreview.srcObject = stream;
 
 
        var mediaRecorder = recorder(stream, {
@@ -100,8 +96,6 @@ export default class Broadcast extends Component {
   render(){
     return (
       <div>
-      broadcaster
-      <audio id="preview" controls/>
       <button onClick={this.startBroadcast}>broadcast</button>
       <button onClick={this.stopRecording}>stop recording</button>
       <button onClick={this.download}>download</button>

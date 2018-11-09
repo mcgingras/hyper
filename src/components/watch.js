@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 
 var signalhub = require('signalhubws')
 var swarm = require('webrtc-swarm')
-var getUserMedia = require('getusermedia')
 var recorder = require('media-recorder-stream')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
 var pump = require('pump')
-var cluster = require('webm-cluster-stream')
-var MicrophoneStream = require('microphone-stream');
 var config = require('../config')
 var mimeType = require('../lib/getMimeType')(window.MediaRecorder.isTypeSupported)
 
@@ -63,7 +60,7 @@ export default class Watch extends Component {
     mediaSource.addEventListener('sourceopen', open)
     var elPlayer = document.getElementById('player')
     elPlayer.src = window.URL.createObjectURL(mediaSource)
-    elPlayer.play()
+    // elPlayer.play()
   }
 
 
@@ -71,7 +68,6 @@ export default class Watch extends Component {
     let input;
     return (
       <div>
-      this is the watching window
       <audio id="player" controls/>
       <input
         id="stationId"
