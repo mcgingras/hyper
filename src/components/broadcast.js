@@ -57,39 +57,45 @@ export default class Broadcast extends Component {
   }
 
   startBroadcast(){
-    const context = this;
-    let rec = context.state.rec;
-    getUserMedia(
+    console.log('***we are starting the broadcast***');
+    var context = this;
+
+    getUserMedia({audio: true, video: false},
     function (err, stream) {
        if (err) return console.log('😵 getUserMedia error', err)
 
-
        var mediaRecorder = recorder(stream, {
-         mimeType: mimeType,
          audioBitsPerSecond: 32000,
-         videoBitsPerSecond: 200000
        })
 
-      rec.init(stream);
-      context.startRecording();
+       context.setState({mediaStream: mediaRecorder});
 
-       var feed = hypercore(ram)
+       // I think this feed thing is what I want to look at most closely to understand
+       // how the distributed part is working
+       var feed = hypercore(ram);
        feed.on('ready', function () {
+         console.log("this jawn is ready");
          var key = feed.key.toString('hex')
          var discoveryKey = feed.discoveryKey.toString('hex');
+         console.log(key);
+         console.log(discoveryKey);
          context.setState({key: key});
 
          var hub = signalhub(discoveryKey, config.signalhub)
-         var sw = swarm(hub)
+         var sw = swarm(hub);
+
+         // when we find a new peer, we want to replicate all the data that is
+         // currently in the feed so they are up to date as well.
          sw.on('peer', function (peer, id) {
+           console.log("we found a peer");
            pump(peer, feed.replicate({ live: true, encrypt: false }), peer)
          })
        })
 
-       var mediaStream = pump(mediaRecorder, cluster())
-       mediaStream.on('data', function (data) {
-         console.log('⚡️ appending to broadcast:', data)
-         feed.append(data)
+       // anytime new data comes in, we want to append it to the feed
+       // right now also appending to this setState thing
+       mediaRecorder.on("data", function (data) {
+          feed.append(data);
        })
      })
    }
@@ -100,6 +106,7 @@ export default class Broadcast extends Component {
       <button onClick={this.startBroadcast}>broadcast</button>
       <button onClick={this.stopRecording}>stop recording</button>
       <button onClick={this.download}>download</button>
+      <audio id="player2" controls/>
       <p>{this.state.key}</p>
       </div>
     )

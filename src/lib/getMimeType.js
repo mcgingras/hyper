@@ -1,4 +1,4 @@
-var MIME_TYPES = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus']
+var MIME_TYPES = ['audio/webm;codecs=opus']
 
 function getMimeType (supportFn) {
   return MIME_TYPES.map(function (e) {
